@@ -1,1 +1,112 @@
 
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Привет, Маша!</title>
+<style>
+  body {
+    margin: 0;
+    background: #1e1e2f;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #fff;
+    flex-direction: column;
+  }
+  h1 {
+    margin-bottom: 20px;
+    font-weight: 400;
+    text-align: center;
+    text-shadow: 0 0 10px #66ccff88;
+  }
+  #canvas {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .message-box {
+    background: rgba(30, 30, 47, 0.85);
+    padding: 20px 30px;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 1;
+    box-shadow: 0 0 25px #66ccffbb;
+    user-select: none;
+  }
+</style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <div class="message-box">
+    <h1>Ты — самая милая 🧸<br>Этот дождик — для тебя!</h1>
+  </div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+let width, height;
+function resize() {
+  width = canvas.width = window.innerWidth;
+  height = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+const bearCount = 50;
+const bears = [];
+const bearEmoji = "🧸";
+
+function random(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+class Bear {
+  constructor() {
+    this.x = random(0, width);
+    this.y = random(-height, 0);
+    this.size = random(24, 48);
+    this.speed = random(1.5, 3);
+    this.swing = random(0, Math.PI * 2);
+    this.swingSpeed = random(0.015, 0.04);
+  }
+  update() {
+    this.y += this.speed;
+    this.swing += this.swingSpeed;
+    this.x += Math.sin(this.swing) * 0.7;
+
+    if(this.y > height) {
+      this.y = random(-100, 0);
+      this.x = random(0, width);
+      this.speed = random(1.5, 3);
+      this.size = random(24, 48);
+    }
+  }
+  draw(ctx) {
+    ctx.font = `${this.size}px serif`;
+    ctx.fillText(bearEmoji, this.x, this.y);
+  }
+}
+
+for(let i=0; i<bearCount; i++) {
+  bears.push(new Bear());
+}
+
+function animate() {
+  ctx.clearRect(0, 0, width, height);
+  for(let bear of bears) {
+    bear.update();
+    bear.draw(ctx);
+  }
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+</body>
+</html>
